@@ -1,57 +1,52 @@
-# Inventory Management Web App
+# Inventory Management App
 
-A web application that helps small businesses track their stock: products,
-quantities, purchase prices, and low-stock alerts.
+A full-stack inventory management app for tracking products, stock quantities, and low-stock items. This project demonstrates a React frontend, an Express API, input validation, and persistent SQLite storage.
 
-Built as a portfolio project to demonstrate full-stack web development skills.
+## Features
 
-## Tech Stack
+- View, add, edit, and delete products
+- Search products by name or SKU
+- Filter by category and stock status
+- See a restock alert for products with a quantity of 1–5
+- Keep product data in a local SQLite database
 
-| Layer    | Technology                     | What it does                        |
-| -------- | ------------------------------ | ----------------------------------- |
-| Frontend | React + Vite                   | The web pages the user sees and clicks |
-| Backend  | Node.js + Express              | The server that handles requests    |
-| Database | SQLite (via better-sqlite3)    | Stores products as a single file    |
+## Technology
 
-## Project Structure
+| Area | Tools |
+| --- | --- |
+| Frontend | React, Vite |
+| Backend | Node.js, Express |
+| Database | SQLite with better-sqlite3 |
 
-```
-Inventory-Portfolio/
-├── frontend/   ← React app (the "face" of the site)
-├── backend/    ← Express server + SQLite database (the "engine")
-└── README.md   ← This file
-```
+## Run locally on Windows
 
-## How to Run (Development Mode)
+Install Node.js 20 or newer. Open two PowerShell windows in the project folder.
 
-You need Node.js (v20 or newer) installed first.
+In the first window, start the backend:
 
-**1. Start the backend** (in a terminal):
-
-```bash
+```powershell
 cd backend
-npm install      # first time only
-npm start        # runs http://localhost:3001
+npm install
+npm start
 ```
 
-**2. Start the frontend** (in a second terminal):
+In the second window, start the frontend:
 
-```bash
+```powershell
 cd frontend
-npm install      # first time only
-npm run dev      # runs http://localhost:5173
+npm install
+npm run dev
 ```
 
-## Roadmap
+Open the local address printed by Vite (normally `http://localhost:5173`). The backend listens on `http://localhost:3001`; the frontend forwards API requests to it during development.
 
-- [x] Project setup (this part!)
-- [x] Products table + basic listing
-- [x] Add / edit / delete products
-- [x] Search and filtering
-- [x] Low-stock alerts
-- [ ] Simple dashboard
-- [ ] Deploy live (so the link can go on a résumé)
+The SQLite database is created as `backend/inventory.db` when the backend starts. Database files are intentionally excluded from Git so local inventory data is not published with the source code.
+
+## Project status
+
+The core portfolio scope is complete: product management, search and filters, stock alerts, and persistent local storage. The next milestone is to publish the source on GitHub and provide a live demo. No additional app features are planned for this version.
 
 ## Author
 
-Built by [Your Name] — [ GitHub profile link here ]
+Built by [Ahmed Samy](https://github.com/AhmeddSamii21)
+
