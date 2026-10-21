@@ -137,6 +137,16 @@ export default function App() {
     (p) => Number(p.quantity) <= LOW_STOCK
   ).length;
 
+  // Smart Restock Alert
+  // Lists products running low: quantity from 1 up to LOW_STOCK.
+  // Quantity 0 is skipped on purpose — those products already show the
+  // stronger "Out of stock" label in the table.
+  // This is derived from "products", so it refreshes automatically
+  // whenever the list is (re)loaded after any add, edit or delete.
+  const restockList = products.filter(
+    (p) => Number(p.quantity) >= 1 && Number(p.quantity) <= LOW_STOCK
+  );
+
   // -----------------------------------------------------------------
   // Search & filtering
   // The dropdown categories are derived from the products we actually
@@ -204,6 +214,33 @@ export default function App() {
             <strong>{lowStockCount}</strong>
             <span>Low stock (5 or fewer)</span>
           </div>
+        </div>
+      )}
+
+      {/* ----- smart restock alert (quantity 1..LOW_STOCK) -----
+          Derived from the full product list, not the filtered view, so
+          the business sees every product that needs restocking. Hidden
+          while loading or on a connection error, and empty when there
+          is nothing to restock. */}
+      {!loading && !fetchError && restockList.length > 0 && (
+        <div className="restock-alert" role="status">
+          <div className="restock-header">
+            <h2>Restock alert</h2>
+            <p>
+              {restockList.length}{" "}
+              {restockList.length === 1 ? "product needs" : "products need"}{" "}
+              restocking
+            </p>
+          </div>
+          <ul className="restock-list">
+            {restockList.map((p) => (
+              <li key={p.id}>
+                <span className="product-name">{p.name}</span>
+                <span className="text-soft">SKU {p.sku}</span>
+                <span className="tag tag-warn">Quantity: {p.quantity}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

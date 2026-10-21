@@ -164,6 +164,53 @@
   border-style: dashed;
 }
 
+/* ---------- smart restock alert ---------- */
+.restock-alert {
+  background: var(--warn-bg);
+  border: 1px solid #fcd34d;
+  color: var(--warn-text);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.restock-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.restock-header h2 {
+  font-size: 16px;
+}
+
+.restock-header p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.restock-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.restock-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
 /* ---------- table card ---------- */
 .card {
   background: var(--card);
