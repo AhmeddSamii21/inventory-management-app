@@ -40,6 +40,11 @@ export default function App() {
   const [busy, setBusy] = useState(false); // an API call is in progress
   const [toast, setToast] = useState(null); // small success message
 
+  // ----- search & filter state -----
+  const [searchText, setSearchText] = useState(""); // text typed in the search box
+  const [categoryFilter, setCategoryFilter] = useState("all"); // "all" or one category name
+  const [stockFilter, setStockFilter] = useState("all"); // "all" | "in" | "low"
+
   // Loads the product list from the backend. Also acts as the
   // "Try again" retry after a connection failure.
   const loadProducts = useCallback(async () => {
@@ -132,6 +137,43 @@ export default function App() {
     (p) => Number(p.quantity) <= LOW_STOCK
   ).length;
 
+  // -----------------------------------------------------------------
+  // Search & filtering
+  // The dropdown categories are derived from the products we actually
+  // have loaded (no hardcoded list), sorted alphabetically.
+  // -----------------------------------------------------------------
+  const categories = [...new Set(products.map((p) => p.category))].sort();
+
+  // The table shows only products passing ALL THREE filters together:
+  //   1. search text — matches the name OR the SKU (ignoring case)
+  //   2. category    — "all", or an exact category match
+  //   3. stock status — "all", "in" (quantity above LOW_STOCK),
+  //                     or "low" (quantity LOW_STOCK or less)
+  const search = searchText.trim().toLowerCase();
+  const filteredProducts = products.filter((p) => {
+    const matchesText =
+      search === "" ||
+      p.name.toLowerCase().includes(search) ||
+      p.sku.toLowerCase().includes(search);
+    const matchesCategory =
+      categoryFilter === "all" || p.category === categoryFilter;
+    const matchesStock =
+      stockFilter === "all" ||
+      (stockFilter === "in" && Number(p.quantity) > LOW_STOCK) ||
+      (stockFilter === "low" && Number(p.quantity) <= LOW_STOCK);
+    return matchesText && matchesCategory && matchesStock;
+  });
+
+  // Used to show the "Clear filters" button only when needed.
+  const filtersActive =
+    search !== "" || categoryFilter !== "all" || stockFilter !== "all";
+
+  const clearFilters = () => {
+    setSearchText("");
+    setCategoryFilter("all");
+    setStockFilter("all");
+  };
+
   // Shows a date like "Oct 21, 2026" from the backend's UTC timestamp.
   const formatDate = (text) =>
     new Date(text.replace(" ", "T") + "Z").toLocaleDateString(undefined, {
@@ -198,60 +240,121 @@ export default function App() {
         </div>
       )}
 
-      {/* ----- state 4: the products table ----- */}
+      {/* ----- state 4: search/filter toolbar + table ----- */}
       {!loading && !fetchError && products.length > 0 && (
-        <div className="card">
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>SKU</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Added</th>
-                <th className="col-actions">
-                  <span className="visually-hidden">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => (
-                <tr key={p.id}>
-                  <td className="product-name">{p.name}</td>
-                  <td className="text-soft">{p.sku}</td>
-                  <td className="text-soft">{p.category}</td>
-                  <td>${Number(p.price).toFixed(2)}</td>
-                  <td>
-                    {p.quantity}
-                    {Number(p.quantity) === 0 ? (
-                      <span className="tag tag-danger">Out of stock</span>
-                    ) : Number(p.quantity) <= LOW_STOCK ? (
-                      <span className="tag tag-warn">Low</span>
-                    ) : null}
-                  </td>
-                  <td className="text-soft">{formatDate(p.created_at)}</td>
-                  <td className="col-actions">
-                    <div className="table-actions">
-                      <button
-                        className="btn btn-secondary btn-small"
-                        onClick={() => openEditForm(p)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger-outline btn-small"
-                        onClick={() => setDeleting(p)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+        <>
+          {/* Toolbar: search box + the two filter dropdowns. The category
+              options come from the loaded products; stock options are fixed. */}
+          <div className="toolbar">
+            <input
+              type="search"
+              className="search-input"
+              placeholder="Search by name or SKU…"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              aria-label="Search products by name or SKU"
+            />
+            <select
+              className="filter-select"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              aria-label="Filter by category"
+            >
+              <option value="all">All categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </select>
+            <select
+              className="filter-select"
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value)}
+              aria-label="Filter by stock status"
+            >
+              <option value="all">All Products</option>
+              <option value="in">In Stock</option>
+              <option value="low">Low Stock</option>
+            </select>
+            {filtersActive && (
+              <button className="btn btn-secondary btn-small" onClick={clearFilters}>
+                Clear filters
+              </button>
+            )}
+            <span className="result-count" role="status">
+              Showing {filteredProducts.length} of {products.length} products
+            </span>
+          </div>
+
+          {filteredProducts.length > 0 ? (
+            /* The table shows the filtered list instead of all products. */
+            <div className="card">
+              <table className="products-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Added</th>
+                    <th className="col-actions">
+                      <span className="visually-hidden">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((p) => (
+                    <tr key={p.id}>
+                      <td className="product-name">{p.name}</td>
+                      <td className="text-soft">{p.sku}</td>
+                      <td className="text-soft">{p.category}</td>
+                      <td>${Number(p.price).toFixed(2)}</td>
+                      <td>
+                        {p.quantity}
+                        {Number(p.quantity) === 0 ? (
+                          <span className="tag tag-danger">Out of stock</span>
+                        ) : Number(p.quantity) <= LOW_STOCK ? (
+                          <span className="tag tag-warn">Low</span>
+                        ) : null}
+                      </td>
+                      <td className="text-soft">{formatDate(p.created_at)}</td>
+                      <td className="col-actions">
+                        <div className="table-actions">
+                          <button
+                            className="btn btn-secondary btn-small"
+                            onClick={() => openEditForm(p)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-danger-outline btn-small"
+                            onClick={() => setDeleting(p)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            /* Everything loaded fine, but no product matches the search/filters. */
+            <div className="state no-match-state">
+              <p className="empty-icon" aria-hidden="true">
+                🔍
+              </p>
+              <h2>No matching products</h2>
+              <p>Nothing in the current list matches your search and filters.</p>
+              <button className="btn btn-secondary" onClick={clearFilters}>
+                Clear filters
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* ----- pop-ups ----- */}

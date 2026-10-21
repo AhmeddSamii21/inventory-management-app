@@ -119,6 +119,51 @@
   font-size: 13px;
 }
 
+/* ---------- search & filter toolbar ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1 1 220px;
+  min-width: 220px;
+}
+
+.search-input,
+.filter-select {
+  font: inherit;
+  font-weight: 400;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.search-input:focus,
+.filter-select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+.result-count {
+  margin-left: auto;
+  color: var(--text-soft);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* "No matching products" keeps the same card look as other states,
+   but softer so it reads as "nothing found", not "something broke". */
+.no-match-state {
+  border-style: dashed;
+}
+
 /* ---------- table card ---------- */
 .card {
   background: var(--card);

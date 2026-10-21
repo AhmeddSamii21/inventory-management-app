@@ -47,7 +47,7 @@ npm run dev      # runs http://localhost:5173
 - [x] Project setup (this part!)
 - [x] Products table + basic listing
 - [x] Add / edit / delete products
-- [ ] Search and filtering
+- [x] Search and filtering
 - [ ] Low-stock alerts
 - [ ] Simple dashboard
 - [ ] Deploy live (so the link can go on a résumé)
