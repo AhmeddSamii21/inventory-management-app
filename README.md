@@ -10,6 +10,12 @@ A full-stack inventory management app for tracking products, stock quantities, a
 - See a restock alert for products with a quantity of 1–5
 - Keep product data in a local SQLite database
 
+## Screenshot
+
+The inventory dashboard: products table with search, filters, stock alerts, and the add/edit product form.
+
+![Inventory dashboard screenshot](docs/images/inventory-dashboard.png)
+
 ## Technology
 
 | Area | Tools |
