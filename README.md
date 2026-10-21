@@ -44,9 +44,9 @@ npm run dev      # runs http://localhost:5173
 
 ## Roadmap
 
-- [ ] Project setup (this part!)
-- [ ] Products table + basic listing
-- [ ] Add / edit / delete products
+- [x] Project setup (this part!)
+- [x] Products table + basic listing
+- [x] Add / edit / delete products
 - [ ] Search and filtering
 - [ ] Low-stock alerts
 - [ ] Simple dashboard
